@@ -1,11 +1,45 @@
+"""
+ai_helper.py — Central AI Routing Module for AI Fitness Tracker
+
+Supports:
+  • Ollama  (Local)
+  • OpenAI  (BYOK)
+  • Groq    (BYOK)
+  • Gemini  (BYOK)
+  • Streaming responses (ChatGPT-style)
+"""
+
 import streamlit as st
 import ollama as _ollama
 from openai import OpenAI
-import base64
 
-# ─────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────
+# 🔥 GLOBAL CACHE (FAST RESPONSE FIX)
+# ─────────────────────────────────────────────────────────────
+AI_RESPONSE_CACHE = {}
+
+# ─────────────────────────────────────────────────────────────
+# Providers
+# ─────────────────────────────────────────────────────────────
+
+PROVIDERS = {
+    "🖥️ Ollama": "ollama",
+    "🤖 OpenAI": "openai",
+    "⚡ Groq": "groq",
+    "💎 Gemini": "gemini",
+}
+
+MODEL_OPTIONS = {
+    "ollama": ["llama3.2", "llama3", "mistral", "phi3", "gemma2"],
+    "openai": ["gpt-4o-mini", "gpt-4o"],
+    "groq":   ["llama3-8b-8192", "mixtral-8x7b-32768"],
+    "gemini": ["gemini-1.5-flash", "gemini-1.5-pro"],
+}
+
+# ─────────────────────────────────────────────────────────────
 # INIT STATE
-# ─────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────
+
 def _init_ai_state():
     defaults = {
         "ai_provider": "ollama",
@@ -19,67 +53,106 @@ def _init_ai_state():
             st.session_state[k] = v
 
 
-# ─────────────────────────────────────────────
-# NORMAL AI RESPONSE
-# ─────────────────────────────────────────────
-def get_ai_response(
-    prompt,
-    system_prompt="You are a fitness coach",
-    max_tokens=1000
-):
+# ─────────────────────────────────────────────────────────────
+# MAIN AI FUNCTION (NON-STREAMING)
+# ─────────────────────────────────────────────────────────────
+
+def get_ai_response(prompt, system_prompt="You are a fitness coach", max_tokens=1000):
     _init_ai_state()
 
     provider = st.session_state["ai_provider"]
     model = st.session_state["ai_model"]
 
+    cache_key = f"{provider}|{model}|{prompt}"
+
+    # 🔥 CACHE HIT
+    if cache_key in AI_RESPONSE_CACHE:
+        return AI_RESPONSE_CACHE[cache_key]
+
+    result = ""
+
+    # ── OLLAMA ─────────────────────────────
     if provider == "ollama":
-
-        res = _ollama.chat(
-            model=model,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": prompt},
-            ]
-        )
-
-        return res["message"]["content"]
-
-    elif provider == "openai":
-
-        client = OpenAI(
-            api_key=st.session_state["api_key"]
-        )
-
-        res = client.chat.completions.create(
+        response = _ollama.chat(
             model=model,
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt},
             ],
-            max_tokens=max_tokens
+            options={"num_predict": 400}
+        )
+        result = response["message"]["content"]
+
+    # ── OPENAI ─────────────────────────────
+    elif provider == "openai":
+        api_key = st.session_state["api_key"].strip()
+        client = OpenAI(api_key=api_key)
+
+        resp = client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": prompt},
+            ],
+            max_tokens=max_tokens,
+        )
+        result = resp.choices[0].message.content
+
+    # ── GROQ ─────────────────────────────
+    elif provider == "groq":
+        api_key = st.session_state["api_key"].strip()
+        client = OpenAI(api_key=api_key, base_url="https://api.groq.com/openai/v1")
+
+        resp = client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": prompt},
+            ],
+            max_tokens=max_tokens,
+        )
+        result = resp.choices[0].message.content
+
+    # ── GEMINI ─────────────────────────────
+    elif provider == "gemini":
+        api_key = st.session_state["api_key"].strip()
+        client = OpenAI(
+            api_key=api_key,
+            base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
         )
 
-        return res.choices[0].message.content
+        resp = client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": prompt},
+            ],
+            max_tokens=max_tokens,
+        )
+        result = resp.choices[0].message.content
 
-    return "Provider not supported"
+    else:
+        result = "Invalid provider"
 
-# ─────────────────────────────────────────────
-# STREAMING AI (CHAT)
-# ─────────────────────────────────────────────
-def stream_ai_response(
-    prompt,
-    system_prompt="You are a fitness coach"
-):
+    # 🔥 STORE CACHE
+    AI_RESPONSE_CACHE[cache_key] = result
+    return result
+
+
+# ─────────────────────────────────────────────────────────────
+# ⚡ STREAMING FUNCTION (CHATGPT TYPE EFFECT)
+# ─────────────────────────────────────────────────────────────
+
+def stream_ai_response(prompt, system_prompt="You are a fitness coach"):
     _init_ai_state()
 
     provider = st.session_state["ai_provider"]
     model = st.session_state["ai_model"]
 
+    # ── OPENAI STREAM ─────────────────────
     if provider == "openai":
-
-        client = OpenAI(
-            api_key=st.session_state["api_key"]
-        )
+        api_key = st.session_state["api_key"].strip()
+        client = OpenAI(api_key=api_key)
 
         stream = client.chat.completions.create(
             model=model,
@@ -87,148 +160,78 @@ def stream_ai_response(
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt},
             ],
-            stream=True,
+            stream=True
         )
 
         for chunk in stream:
             token = chunk.choices[0].delta.content
-
             if token:
                 yield token
 
+    # ── OLLAMA STREAM ─────────────────────
     elif provider == "ollama":
-
-        stream = _ollama.chat(
+        response = _ollama.chat(
             model=model,
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt},
             ],
-            stream=True,
+            stream=True
         )
 
-        for chunk in stream:
+        for chunk in response:
             yield chunk["message"]["content"]
 
+    # ── OTHERS (NO STREAM SUPPORT) ────────
     else:
-        yield get_ai_response(
-            prompt,
-            system_prompt
-        )
+        yield get_ai_response(prompt, system_prompt)
 
 
-# ─────────────────────────────────────────────
-# 🍎 FOOD IMAGE ANALYZER (NEW FEATURE)
-# ─────────────────────────────────────────────
-def analyze_food_image(image_bytes):
-    _init_ai_state()
+# ─────────────────────────────────────────────────────────────
+# DB MIGRATION HELPER
+# ─────────────────────────────────────────────────────────────
 
-    provider = st.session_state["ai_provider"]
-    model = st.session_state["ai_model"]
+def ensure_db_schema(conn):
+    cursor = conn.cursor()
 
-    prompt = """
-You are a professional nutrition AI coach.
+    migrations = [
+        "ALTER TABLE workouts ADD COLUMN username TEXT",
+        "ALTER TABLE meals ADD COLUMN username TEXT",
+        "ALTER TABLE weight_log ADD COLUMN username TEXT",
+    ]
 
-Analyze this food image and return:
-
-1. Food name(s)
-2. Estimated calories
-3. Protein / carbs / fats
-4. Health score (out of 10)
-5. Is it healthy or not (yes/no with reason)
-6. Best time to eat it (morning/afternoon/night/post-workout)
-7. Simple diet advice
-"""
-
-    # ───────── OLLAMA (LLAVA) ─────────
-    if provider == "ollama":
-        res = _ollama.chat(
-            model=model,
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt,
-                    "images": [image_bytes],
-                }
-            ],
-        )
-        return res["message"]["content"]
-
-    # ───────── OPENAI VISION ─────────
-    elif provider == "openai":
-        client = OpenAI(api_key=st.session_state["api_key"])
-
-        b64 = base64.b64encode(image_bytes).decode()
-
-        res = client.chat.completions.create(
-            model=model,
-            messages=[
-                {
-                    "role": "user",
-                    "content": [
-                        {"type": "text", "text": prompt},
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": f"data:image/png;base64,{b64}"
-                            },
-                        },
-                    ],
-                }
-            ],
-        )
-
-        return res.choices[0].message.content
-
-    else:
-        return "This provider does not support image analysis."
+    for sql in migrations:
+        try:
+            cursor.execute(sql)
+            conn.commit()
+        except:
+            pass
 
 
-# ─────────────────────────────────────────────
-# PROVIDER BADGE
-# ─────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────
+# UI BADGE
+# ─────────────────────────────────────────────────────────────
+
 def provider_badge():
     _init_ai_state()
-    return f"🤖 {st.session_state['ai_provider']} | {st.session_state['ai_model']}"
-    # ─────────────────────────────────────────────
-# ─────────────────────────────────────────────
-# AI SIDEBAR
-# ─────────────────────────────────────────────
 
-def render_ai_sidebar():
+    p = st.session_state["ai_provider"]
+    m = st.session_state["ai_model"]
 
-    _init_ai_state()
+    colors = {
+        "ollama": "#10b981",
+        "openai": "#6366f1",
+        "groq": "#f59e0b",
+        "gemini": "#ec4899",
+    }
 
-    st.sidebar.title("⚙️ AI Settings")
-
-    provider = st.sidebar.selectbox(
-        "AI Provider",
-        ["ollama", "openai"],
-        index=0 if st.session_state["ai_provider"] == "ollama" else 1
-    )
-
-    st.session_state["ai_provider"] = provider
-
-    if provider == "ollama":
-
-        st.session_state["ai_model"] = st.sidebar.selectbox(
-            "Model",
-            [
-                "llama3.2",
-                "mistral",
-                "gemma2",
-                "llava"
-            ]
-        )
-
-        st.sidebar.success(
-            "🖥️ Local AI Inference (Ollama)"
-        )
-
-    elif provider == "openai":
-
-        api_key = st.sidebar.text_input(
-    "OpenAI API Key",
-    type="password",
-    value=st.session_state["api_key"]
-)
+    return f"""
+    <span style="
+        padding:4px 10px;
+        border-radius:20px;
+        border:1px solid {colors.get(p,'#999')};
+        color:{colors.get(p,'#999')};
+        font-size:12px;">
+        {p} · {m}
+    </span>
+    """
