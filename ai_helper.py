@@ -10,7 +10,7 @@ Supports:
 """
 
 import streamlit as st
-import ollama as _ollama
+#import ollama as _ollama
 from openai import OpenAI
 
 # ─────────────────────────────────────────────────────────────
@@ -235,3 +235,53 @@ def provider_badge():
         {p} · {m}
     </span>
     """
+    def render_ai_sidebar():
+    _init_ai_state()
+
+    st.sidebar.markdown("## ⚙️ AI Settings")
+
+    provider_display = st.sidebar.selectbox(
+        "Provider",
+        list(PROVIDERS.keys()),
+        index=list(PROVIDERS.values()).index(
+            st.session_state["ai_provider"]
+        )
+    )
+
+    provider = PROVIDERS[provider_display]
+    st.session_state["ai_provider"] = provider
+
+    models = MODEL_OPTIONS.get(provider, [])
+
+    current_model = st.session_state.get("ai_model", models[0])
+
+    if current_model not in models:
+        current_model = models[0]
+
+    st.session_state["ai_model"] = st.sidebar.selectbox(
+        "Model",
+        models,
+        index=models.index(current_model)
+    )
+
+    if provider in ["openai", "groq", "gemini"]:
+        st.session_state["api_key"] = st.sidebar.text_input(
+            "API Key",
+            value=st.session_state.get("api_key", ""),
+            type="password"
+        )
+
+    if provider == "ollama":
+        st.session_state["ollama_url"] = st.sidebar.text_input(
+            "Ollama URL",
+            value=st.session_state.get(
+                "ollama_url",
+                "http://localhost:11434"
+            )
+        )
+
+    st.sidebar.markdown("---")
+    st.sidebar.markdown(
+        provider_badge(),
+        unsafe_allow_html=True
+    )
