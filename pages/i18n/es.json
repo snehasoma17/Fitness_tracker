@@ -1,0 +1,19 @@
+{
+  "dashboard_title": "Panel de control",
+  "overview": "Descripción general de hoy",
+  "calories_goal": "Objetivo de calorías",
+  "protein_goal": "Objetivo de proteína",
+  "weight": "Peso",
+  "steps": "Pasos diarios",
+  "features": "Características de IA",
+  "ai_coach": "Entrenador de IA",
+  "diet_planner": "Planificador de dieta",
+  "workout_planner": "Planificador de ejercicios",
+  "food_scanner": "Escáner de alimentos",
+  "progress": "Progreso diario",
+  "weekly_activity": "Actividad semanal",
+  "fitness_score": "Puntuación de estado físico",
+  "tip": "Consejo de IA",
+  "motivation": "Motivación diaria",
+  "ask_question": "Haz una pregunta"
+}

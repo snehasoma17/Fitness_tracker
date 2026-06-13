@@ -1,0 +1,19 @@
+{
+  "dashboard_title": "Tableau de bord",
+  "overview": "Aperçu d'aujourd'hui",
+  "calories_goal": "Objectif calorique",
+  "protein_goal": "Objectif protéique",
+  "weight": "Poids",
+  "steps": "Étapes quotidiennes",
+  "features": "Fonctionnalités IA",
+  "ai_coach": "Entraîneur IA",
+  "diet_planner": "Planificateur de régime",
+  "workout_planner": "Planificateur d'entraînement",
+  "food_scanner": "Scanner alimentaire",
+  "progress": "Progrès quotidien",
+  "weekly_activity": "Activité hebdomadaire",
+  "fitness_score": "Score de remise en forme",
+  "tip": "Conseil IA",
+  "motivation": "Motivation quotidienne",
+  "ask_question": "Poser une question"
+}

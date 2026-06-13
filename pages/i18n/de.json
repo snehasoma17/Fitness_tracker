@@ -1,0 +1,19 @@
+{
+  "dashboard_title": "Dashboard",
+  "overview": "Übersicht für heute",
+  "calories_goal": "Kalorienziel",
+  "protein_goal": "Proteinziel",
+  "weight": "Gewicht",
+  "steps": "Tägliche Schritte",
+  "features": "KI-Funktionen",
+  "ai_coach": "KI-Trainer",
+  "diet_planner": "Ernährungsplaner",
+  "workout_planner": "Trainingsplaner",
+  "food_scanner": "Lebensmittelscanner",
+  "progress": "Täglicher Fortschritt",
+  "weekly_activity": "Wöchentliche Aktivität",
+  "fitness_score": "Fitnesswert",
+  "tip": "KI-Tipp",
+  "motivation": "Tägliche Motivation",
+  "ask_question": "Eine Frage stellen"
+}
