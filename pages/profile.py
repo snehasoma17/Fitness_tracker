@@ -1,9 +1,14 @@
 import streamlit as st
+import ai_helper
+from utils.i18n import t
 import sqlite3
 import pandas as pd
 import os
 from datetime import date
+import utils.theme
+from utils.theme import load_css
 
+load_css()
 st.set_page_config(page_title="My Profile", page_icon="👤", layout="wide")
 try:
     with open("data/style.css") as f:
@@ -42,7 +47,7 @@ with left:
     st.markdown('<div class="section-header"><span class="icon">📸</span> Profile Photo</div>', unsafe_allow_html=True)
     photo_path = f"data/photos/{username}_profile.jpg"
     if os.path.exists(photo_path):
-        st.image(photo_path, caption="Your current profile photo", use_container_width=True)
+        st.image(photo_path, caption="Your current profile photo", use_container_width="stretch")
     else:
         st.markdown("""
         <div class="info-card" style="text-align:center;padding:40px;">
@@ -57,7 +62,7 @@ with left:
         with open(photo_path, "wb") as f:
             f.write(uploaded_photo.read())
         st.success("✅ Profile photo updated!")
-        st.image(photo_path, use_container_width=True)
+        st.image(photo_path, use_container_width="stretch")
 
     # Quick stats from DB
     if user is not None:

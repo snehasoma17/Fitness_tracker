@@ -1,0 +1,60 @@
+{
+  "app_title": "एआई फिटनेस ट्रैकर",
+  "login": "लॉगिन",
+  "signup": "साइन अप",
+  "username": "उपयोगकर्ता नाम",
+  "password": "पासवर्ड",
+  "submit": "जमा करें",
+  "logout": "लॉगआउट",
+
+  "dashboard": "डैशबोर्ड",
+  "profile": "प्रोफ़ाइल",
+  "meals": "भोजन",
+  "progress": "प्रगति",
+  "bmi": "बीएमआई",
+  "workout_streak": "वर्कआउट स्ट्रीक",
+
+  "weight": "वजन",
+  "height": "ऊंचाई",
+  "age": "आयु",
+  "gender": "लिंग",
+
+  "male": "पुरुष",
+  "female": "महिला",
+
+  "goal": "लक्ष्य",
+  "activity_level": "गतिविधि स्तर",
+
+  "weight_loss": "वजन घटाना",
+  "muscle_gain": "मांसपेशियां बढ़ाना",
+  "maintenance": "वजन बनाए रखना",
+
+  "generate_plan": "योजना बनाएं",
+  "diet_plan": "डाइट प्लान",
+  "workout_plan": "वर्कआउट प्लान",
+
+  "ai_coach": "एआई कोच",
+  "ai_diet_plan": "एआई डाइट प्लानर",
+  "ai_workout_planner": "एआई वर्कआउट प्लानर",
+  "rag_assistant": "फिटनेस सहायक",
+
+  "save": "सहेजें",
+  "update": "अपडेट करें",
+  "delete": "हटाएं",
+  "reset": "रीसेट",
+
+  "calories": "कैलोरी",
+  "protein": "प्रोटीन",
+  "carbs": "कार्बोहाइड्रेट",
+  "fat": "वसा",
+
+  "water_intake": "पानी का सेवन",
+  "steps": "कदम",
+
+  "language": "भाषा",
+  "settings": "सेटिंग्स",
+
+  "success": "सफलता",
+  "error": "त्रुटि",
+  "loading": "लोड हो रहा है..."
+}

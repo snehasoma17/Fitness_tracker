@@ -1,0 +1,60 @@
+{
+  "app_title": "AI Fitness Tracker",
+  "login": "Login",
+  "signup": "Signup",
+  "username": "Username",
+  "password": "Password",
+  "submit": "Submit",
+  "logout": "Logout",
+
+  "dashboard": "Dashboard",
+  "profile": "Profile",
+  "meals": "Meals",
+  "progress": "Progress",
+  "bmi": "BMI",
+  "workout_streak": "Workout Streak",
+
+  "weight": "Weight",
+  "height": "Height",
+  "age": "Age",
+  "gender": "Gender",
+
+  "male": "Male",
+  "female": "Female",
+
+  "goal": "Goal",
+  "activity_level": "Activity Level",
+
+  "weight_loss": "Weight Loss",
+  "muscle_gain": "Muscle Gain",
+  "maintenance": "Maintenance",
+
+  "generate_plan": "Generate Plan",
+  "diet_plan": "Diet Plan",
+  "workout_plan": "Workout Plan",
+
+  "ai_coach": "AI Coach",
+  "ai_diet_plan": "AI Diet Planner",
+  "ai_workout_planner": "AI Workout Planner",
+  "rag_assistant": "Fitness Assistant",
+
+  "save": "Save",
+  "update": "Update",
+  "delete": "Delete",
+  "reset": "Reset",
+
+  "calories": "Calories",
+  "protein": "Protein",
+  "carbs": "Carbohydrates",
+  "fat": "Fat",
+
+  "water_intake": "Water Intake",
+  "steps": "Steps",
+
+  "language": "Language",
+  "settings": "Settings",
+
+  "success": "Success",
+  "error": "Error",
+  "loading": "Loading..."
+}

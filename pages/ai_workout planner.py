@@ -1,5 +1,12 @@
 import streamlit as st
+import ai_helper
+from utils.i18n import t
+
+
 from langchain_ollama import ChatOllama
+from utils.theme import load_css
+
+load_css()
 
 st.title("💪 AI Workout Planner")
 

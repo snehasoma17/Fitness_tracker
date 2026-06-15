@@ -1,67 +1,90 @@
 import streamlit as st
-import sqlite3
-import os, sys
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import ai_helper
-
-# ─────────────────────────────────────────────
-# CONFIG
-# ─────────────────────────────────────────────
+# ==========================================
+# PAGE CONFIG
+# ==========================================
 st.set_page_config(
     page_title="AI Fitness Tracker",
     page_icon="🏋️",
     layout="wide"
 )
 
-# ─────────────────────────────────────────────
-# DATABASE
-# ─────────────────────────────────────────────
-conn = sqlite3.connect("fitness.db", check_same_thread=False)
-cursor = conn.cursor()
+# ==========================================
+# IMPORTS
+# ==========================================
+import sqlite3
+import os
+import sys
 
-# ─────────────────────────────────────────────
-# SESSION
-# ─────────────────────────────────────────────
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+import ai_helper
+from utils.theme import load_css
+from utils.i18n import LANGUAGES, t
+
+# ==========================================
+# CSS
+# ==========================================
+load_css()
+
+# ==========================================
+# SESSION INIT (SAFE)
+# ==========================================
+if "current_language" not in st.session_state:
+    st.session_state.current_language = "English"
+
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
 if "username" not in st.session_state:
     st.session_state.username = ""
 
-# ─────────────────────────────────────────────
-# AI SIDEBAR
-# ─────────────────────────────────────────────
-st.sidebar.title("⚙️ AI Settings")
+# ==========================================
+# SIDEBAR - LANGUAGE (ONLY ONCE)
+# ==========================================
+st.sidebar.markdown("## 🌐 Language")
 
 st.sidebar.selectbox(
-    "Provider",
-    ["ollama", "openai"],
-    key="ai_provider"
+    "Choose Language",
+    options=list(LANGUAGES.keys()),
+    key="current_language"
 )
 
-st.sidebar.text_input("API Key (if needed)", type="password", key="api_key")
+# ==========================================
+# SIDEBAR - AI SETTINGS
+# ==========================================
+st.sidebar.markdown("---")
+ai_helper.render_ai_sidebar()
 
-# ─────────────────────────────────────────────
+# ==========================================
+# DATABASE
+# ==========================================
+conn = sqlite3.connect("fitness.db", check_same_thread=False)
+cursor = conn.cursor()
+
+# ==========================================
 # LOGIN PAGE
-# ─────────────────────────────────────────────
+# ==========================================
 if not st.session_state.logged_in:
 
-    st.title("🏋️ AI Fitness Tracker")
+    st.title(f"🏋️ {t('app_title')}")
 
-    choice = st.radio("Login / Signup", ["Login", "Signup"])
+    auth_mode = st.radio(
+        t("login_signup"),
+        [t("login"), t("signup")]
+    )
 
-    username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
+    username = st.text_input(t("username"))
+    password = st.text_input(t("password"), type="password")
 
-    if st.button("Submit"):
+    if st.button(t("submit")):
         st.session_state.logged_in = True
         st.session_state.username = username
         st.rerun()
 
-# ─────────────────────────────────────────────
+# ==========================================
 # MAIN APP
-# ─────────────────────────────────────────────
+# ==========================================
 else:
 
     st.sidebar.success(f"Logged in as {st.session_state.username}")
@@ -69,58 +92,72 @@ else:
     menu = st.sidebar.radio(
         "Navigation",
         [
-            "Dashboard",
-            "AI Coach",
-            "AI Diet Plan",
-            "AI Workout",
-            "📸 Food Scanner"
+            t("dashboard"),
+            t("ai_coach"),
+            t("diet_planner"),
+            t("workout_planner"),
+            t("food_scanner")
         ]
     )
 
-    # ───────── DASHBOARD ─────────
-    if menu == "Dashboard":
-        st.title("Dashboard")
-        st.write("Welcome to your fitness AI system")
+    # ---------------- DASHBOARD ----------------
+    if menu == t("dashboard"):
+        st.title(f"📊 {t('dashboard')}")
+        st.success(f"Welcome back, {st.session_state.username}!")
+        st.write(t("track_message"))
 
-    # ───────── AI COACH ─────────
-    elif menu == "AI Coach":
-        st.title("AI Coach")
+    # ---------------- AI COACH ----------------
+    elif menu == t("ai_coach"):
+        st.title(f"🤖 {t('ai_coach')}")
 
-        prompt = st.text_input("Ask anything")
+        prompt = st.text_input(t("ask_ai"))
 
         if prompt:
+            placeholder = st.empty()
             response = ""
+
             for token in ai_helper.stream_ai_response(prompt):
                 response += token
-                st.write(response)
+                placeholder.markdown(response)
 
-    # ───────── DIET ─────────
-    elif menu == "AI Diet Plan":
-        st.title("Diet Plan")
+    # ---------------- DIET ----------------
+    elif menu == t("diet_planner"):
+        st.title(f"🥗 {t('diet_planner')}")
 
-        prompt = st.text_area("Enter goal")
+        goal = st.text_area(t("enter_diet_goal"))
 
-        if st.button("Generate"):
-            st.write(ai_helper.get_ai_response(prompt))
+        if st.button(t("generate_diet")):
+            result = ai_helper.get_ai_response(
+                f"Create a diet plan for: {goal}"
+            )
+            st.markdown(result)
 
-    # ───────── WORKOUT ─────────
-    elif menu == "AI Workout":
-        st.title("Workout Plan")
+    # ---------------- WORKOUT ----------------
+    elif menu == t("workout_planner"):
+        st.title(f"💪 {t('workout_planner')}")
 
-        prompt = st.text_area("Enter goal")
+        goal = st.text_area(t("enter_workout_goal"))
 
-        if st.button("Generate"):
-            st.write(ai_helper.get_ai_response(prompt))
+        if st.button(t("generate_workout")):
+            result = ai_helper.get_ai_response(
+                f"Create a workout plan for: {goal}"
+            )
+            st.markdown(result)
 
-    # ───────── 📸 FOOD SCANNER ─────────
-    elif menu == "📸 Food Scanner":
-        st.title("Food Scanner AI")
+    # ---------------- FOOD SCANNER ----------------
+    elif menu == t("food_scanner"):
+        st.title(f"📸 {t('food_scanner')}")
 
-        file = st.file_uploader("Upload food image", type=["png", "jpg", "jpeg"])
+        uploaded_file = st.file_uploader(
+            t("upload_food"),
+            type=["png", "jpg", "jpeg"]
+        )
 
-        if file:
-            st.image(file, use_container_width=True)
+        if uploaded_file:
+            st.image(uploaded_file)
 
-            if st.button("Analyze Food"):
-                result = ai_helper.analyze_food_image(file.read())
+            if st.button(t("analyze_food")):
+                result = ai_helper.analyze_food_image(
+                    uploaded_file.read()
+                )
                 st.success(result)

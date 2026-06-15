@@ -4,7 +4,10 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import ai_helper
 from pypdf import PdfReader
 from io import BytesIO
+from utils.theme import load_css
+from utils.i18n import t
 
+load_css()
 st.set_page_config(page_title="AI Health Coach", page_icon="🤖", layout="wide")
 try:
     with open("data/style.css") as f:
@@ -46,7 +49,7 @@ def upload_section(key: str, label: str, desc: str) -> tuple:
     file_bytes = uploaded.read()
 
     if ext in ("png","jpg","jpeg"):
-        st.image(BytesIO(file_bytes), caption=f"📸 {uploaded.name}", use_container_width=True)
+        st.image(BytesIO(file_bytes), caption=f"📸 {uploaded.name}", use_container_width="stretch")
         desc_txt = st.text_area(
             "📝 Describe the image (if no vision model)",
             placeholder="e.g. A plate with grilled salmon, brown rice, and broccoli.",
@@ -79,16 +82,23 @@ def run_ai(prompt: str, sys_prompt: str, file_bytes=None, ext=None, img_desc="")
 
 
 # ── Page Header ────────────────────────────────────────────────────────────────
-st.markdown(f"""
-<div class="hero-card">
-    <h1>🤖 AI Health &amp; Fitness Coach</h1>
-    <h3>Personalised diet, workout &amp; wellness advice — photo and PDF supported</h3>
-    <p>
-        Upload a meal photo, fitness PDF, or health report · Ask anything ·
-        {ai_helper.provider_badge()}
-    </p>
-</div>
-""", unsafe_allow_html=True)
+
+provider = st.session_state.get("ai_provider", "OpenAI")
+model = st.session_state.get("ai_model", "gpt-4o-mini")
+
+st.markdown(
+    f"""
+    <div style="
+        padding:8px;
+        border-radius:10px;
+        border:1px solid #444;
+        margin-top:10px;">
+        Provider: {provider}<br>
+        Model: {model}
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # ── Tabs ───────────────────────────────────────────────────────────────────────
 tab1, tab2, tab3, tab4 = st.tabs([
@@ -308,7 +318,7 @@ with tab4:
     starter_clicked = None
     for i, q in enumerate(starters):
         with qcols[i % 3]:
-            if st.button(q, key=f"starter_{i}", use_container_width=True):
+            if st.button(q, key=f"starter_{i}", use_container_width="stretch"):
                 starter_clicked = q
 
     st.write("")
@@ -323,7 +333,7 @@ with tab4:
 
     c1, c2 = st.columns([1, 3])
     with c1:
-        if st.button("💬 Ask Coach", type="primary", key="chat_btn", use_container_width=True):
+        if st.button("💬 Ask Coach", type="primary", key="chat_btn", use_container_width="stretch"):
             if not chat_q.strip():
                 st.error("Please enter a question.")
             else:

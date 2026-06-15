@@ -4,6 +4,11 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from datetime import date, timedelta
+import ai_helper
+from utils.i18n import t
+import utils.theme
+from utils.theme import load_css
+load_css()
 
 st.set_page_config(page_title="Progress Tracker", page_icon="📈", layout="wide")
 try:
@@ -148,7 +153,7 @@ if not df.empty and "weight" in df.columns and "date" in df.columns:
             legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color="#94a3b8")),
             margin=dict(l=0, r=0, t=10, b=0), height=300,
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width="stretch")
 
     with hist_col:
         st.markdown('<div class="section-header"><span class="icon">📊</span> Weight Distribution</div>', unsafe_allow_html=True)
@@ -165,12 +170,12 @@ if not df.empty and "weight" in df.columns and "date" in df.columns:
             margin=dict(l=0, r=0, t=10, b=0), height=300,
             bargap=0.1,
         )
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig2, use_container_width="stretch")
 
     # ── DATA TABLE ──────────────────────────────────────────
     st.markdown('<div class="section-header"><span class="icon">📋</span> Weight Log History</div>', unsafe_allow_html=True)
     display_df = df.drop(columns=["id", "username"], errors="ignore").sort_values("date", ascending=False)
-    st.dataframe(display_df, use_container_width=True, hide_index=True)
+    st.dataframe(display_df, use_container_width="stretch", hide_index=True)
 
 else:
     st.markdown("""
