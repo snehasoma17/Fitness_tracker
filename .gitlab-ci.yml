@@ -1,0 +1,160 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Fitness Tracker — GitLab CI/CD Pipeline
+# ─────────────────────────────────────────────────────────────────────────────
+# Pipeline stages (run in order):
+#   lint → format-check → type-check → dead-code → security → audit → test → deploy
+# ─────────────────────────────────────────────────────────────────────────────
+
+image: python:3.11-slim
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  UV_CACHE_DIR: "$CI_PROJECT_DIR/.cache/uv"
+
+# Cache pip/uv downloads across jobs
+cache:
+  paths:
+    - .cache/pip
+    - .cache/uv
+    - .venv/
+
+stages:
+  - lint
+  - format-check
+  - type-check
+  - dead-code
+  - security
+  - audit
+  - test
+  - deploy
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Shared setup template (reused by all jobs via `extends`)
+# ─────────────────────────────────────────────────────────────────────────────
+.setup: &setup
+  before_script:
+    - pip install uv --quiet
+    - uv venv .venv --python=python3.11
+    - source .venv/bin/activate || . .venv/Scripts/activate 2>/dev/null || true
+    - uv pip install -r requirements.txt --quiet
+    - uv pip install ruff mypy vulture bandit pytest types-requests --quiet
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stage 1 — LINT
+# ─────────────────────────────────────────────────────────────────────────────
+lint:
+  stage: lint
+  <<: *setup
+  script:
+    - ruff check . --exit-non-zero-on-fix
+  allow_failure: false
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH'
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stage 2 — FORMAT CHECK
+# ─────────────────────────────────────────────────────────────────────────────
+format-check:
+  stage: format-check
+  <<: *setup
+  script:
+    - ruff format --check .
+  allow_failure: false
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH'
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stage 3 — TYPE CHECK
+# ─────────────────────────────────────────────────────────────────────────────
+type-check:
+  stage: type-check
+  <<: *setup
+  script:
+    - mypy . --ignore-missing-imports --no-strict-optional --exclude .venv
+  allow_failure: true   # mypy is advisory — won't block merge
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH'
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stage 4 — DEAD CODE
+# ─────────────────────────────────────────────────────────────────────────────
+dead-code:
+  stage: dead-code
+  <<: *setup
+  script:
+    - vulture . --min-confidence=80 --exclude .venv,tests
+  allow_failure: true   # advisory — reports only
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH'
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stage 5 — SECURITY CHECKS
+# ─────────────────────────────────────────────────────────────────────────────
+security:
+  stage: security
+  <<: *setup
+  script:
+    - bandit -r . -x .venv,tests --skip B101,B311 -ll
+  allow_failure: true   # advisory; high-severity findings will be visible
+  artifacts:
+    reports:
+      # Export SAST-compatible JSON for GitLab Security Dashboard
+      sast: bandit-report.json
+    when: always
+  after_script:
+    - bandit -r . -x .venv,tests --skip B101,B311 -f json -o bandit-report.json 2>/dev/null || true
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH'
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stage 6 — PACKAGE AUDIT
+# ─────────────────────────────────────────────────────────────────────────────
+audit:
+  stage: audit
+  <<: *setup
+  script:
+    - uv pip install pip-audit --quiet
+    - pip-audit -r requirements.txt --progress-spinner=off
+  allow_failure: true   # advisory — won't block pipeline for known advisories
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH'
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stage 7 — UNIT TESTS
+# ─────────────────────────────────────────────────────────────────────────────
+test:
+  stage: test
+  <<: *setup
+  script:
+    - pytest tests/ -v --tb=short --junitxml=pytest-report.xml
+  artifacts:
+    reports:
+      junit: pytest-report.xml
+    when: always
+    expire_in: 7 days
+  allow_failure: false   # tests MUST pass
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH'
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stage 8 — DEPLOY (main branch only)
+# ─────────────────────────────────────────────────────────────────────────────
+deploy:
+  stage: deploy
+  image: python:3.11-slim
+  script:
+    - echo "✅ All checks passed on branch $CI_COMMIT_BRANCH"
+    - echo "🚀 Deployment step — add your deploy commands here (e.g. Docker build, push to server)"
+    - echo "   Example: docker build -t fitness-tracker . && docker push registry.example.com/fitness-tracker"
+  environment:
+    name: production
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: manual   # manual approval required before deploying to production

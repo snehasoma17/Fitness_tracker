@@ -1,0 +1,83 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "fitness-tracker"
+version = "1.0.0"
+description = "AI-powered multilingual fitness tracker"
+requires-python = ">=3.10"
+readme = "README.md"
+
+# ---------------------------------------------------------------------------
+# Ruff – Linting & Formatting
+# ---------------------------------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+exclude = [
+    ".venv",
+    "__pycache__",
+    ".git",
+    "*.egg-info",
+    "dist",
+    "build",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+    "B008",  # do not perform function calls in default argument values
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+
+# ---------------------------------------------------------------------------
+# Mypy – Type Checking
+# ---------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true
+warn_return_any = false
+warn_unused_configs = true
+disallow_untyped_defs = false
+exclude = [
+    ".venv/",
+    "tests/",
+]
+
+# ---------------------------------------------------------------------------
+# Pytest
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+
+# ---------------------------------------------------------------------------
+# Vulture – Dead Code Detection
+# ---------------------------------------------------------------------------
+[tool.vulture]
+min_confidence = 80
+paths = ["."]
+exclude = [".venv", "tests", "__pycache__"]
+ignore_names = ["_*", "unused_*"]
+
+# ---------------------------------------------------------------------------
+# Bandit – Security Checks
+# ---------------------------------------------------------------------------
+[tool.bandit]
+exclude_dirs = [".venv", "tests", "__pycache__"]
+skips = ["B101", "B311"]   # assert usage & random (not security-critical here)

@@ -11,3 +11,4 @@ ollama
 pypdf
 faiss-cpu
 python-dotenv
+sqlite-utils

@@ -1,3 +1,51 @@
+# Python
 __pycache__/
-*.pyc
-fitness.db
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Environment variables / secrets
+.env
+.env.*
+*.key
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Database (local only — not committed)
+*.db
+*.sqlite
+*.sqlite3
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Ruff / mypy caches
+.ruff_cache/
+.mypy_cache/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+
+# Pre-commit
+.pre-commit-cache/
+
+# GitLab runner
+.gitlab-runner/

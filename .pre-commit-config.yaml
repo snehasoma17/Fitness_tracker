@@ -1,0 +1,98 @@
+repos:
+  # ──────────────────────────────────────────────────────────────────────────
+  # 1. FORMATTING  (ruff-format — isort + black-compatible)
+  # ──────────────────────────────────────────────────────────────────────────
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.10
+    hooks:
+      - id: ruff-format
+        name: "Format (ruff)"
+        args: ["--line-length=100"]
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # 2. LINTING  (ruff)
+  # ──────────────────────────────────────────────────────────────────────────
+      - id: ruff
+        name: "Lint (ruff)"
+        args: ["--fix", "--exit-non-zero-on-fix"]
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # 3. TYPE CHECKING  (mypy)
+  # ──────────────────────────────────────────────────────────────────────────
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.10.0
+    hooks:
+      - id: mypy
+        name: "Type check (mypy)"
+        additional_dependencies:
+          - types-requests
+          - types-PyYAML
+        args: ["--ignore-missing-imports", "--no-strict-optional"]
+        exclude: ^(tests/|\.venv/)
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # 4. DEAD CODE  (vulture)
+  # ──────────────────────────────────────────────────────────────────────────
+  - repo: local
+    hooks:
+      - id: vulture
+        name: "Dead code (vulture)"
+        language: python
+        entry: vulture
+        args: [".", "--min-confidence=80", "--exclude=.venv,tests"]
+        types: [python]
+        pass_filenames: false
+        additional_dependencies: ["vulture"]
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # 5. SECURITY  (bandit)
+  # ──────────────────────────────────────────────────────────────────────────
+      - id: bandit
+        name: "Security (bandit)"
+        language: python
+        entry: bandit
+        args: ["-r", ".", "-x", ".venv,tests", "--skip", "B101,B311", "-ll"]
+        types: [python]
+        pass_filenames: false
+        additional_dependencies: ["bandit"]
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # 6. PACKAGE AUDIT  (pip-audit)
+  # ──────────────────────────────────────────────────────────────────────────
+      - id: pip-audit
+        name: "Package audit (pip-audit)"
+        language: python
+        entry: pip-audit
+        args: ["-r", "requirements.txt", "--progress-spinner=off"]
+        pass_filenames: false
+        always_run: true
+        additional_dependencies: ["pip-audit"]
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # 7. UNIT TESTS  (pytest)
+  # ──────────────────────────────────────────────────────────────────────────
+      - id: pytest
+        name: "Unit tests (pytest)"
+        language: python
+        entry: pytest
+        args: ["tests/", "-v", "--tb=short", "-q"]
+        pass_filenames: false
+        always_run: true
+        additional_dependencies:
+          - pytest
+          - streamlit
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Generic built-in hooks
+  # ──────────────────────────────────────────────────────────────────────────
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ["--maxkb=5000"]
+      - id: detect-private-key
