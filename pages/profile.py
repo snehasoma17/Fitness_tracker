@@ -300,8 +300,8 @@ The user has updated their profile details:
 - Height: {h} cm
 - Goal: {gl}
 - Activity Level: {activity}
-- Water Target: {user.get('water_goal', 2.5) if user is not None else 2.5} L/day
-- Sleep Target: {user.get('sleep_goal', 8.0) if user is not None else 8.0} hrs/night
+- Water Target: {user.get("water_goal", 2.5) if user is not None else 2.5} L/day
+- Sleep Target: {user.get("sleep_goal", 8.0) if user is not None else 8.0} hrs/night
 - BMR: {bmr_init} kcal/day
 - TDEE: {tdee_init} kcal/day
 - Target Calorie Intake: {target_cals_init} kcal/day

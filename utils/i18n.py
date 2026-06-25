@@ -1,15 +1,12 @@
-import streamlit as st
 import json
+
+import streamlit as st
 
 # -----------------------------
 # LANGUAGE MAP
 # -----------------------------
-LANGUAGES = {
-    "English": "en",
-    "Hindi": "hi",
-    "Telugu": "te",
-    "Tamil": "ta"
-}
+LANGUAGES = {"English": "en", "Hindi": "hi", "Telugu": "te", "Tamil": "ta"}
+
 
 # -----------------------------
 # CACHE TRANSLATIONS (IMPORTANT FIX)
@@ -17,10 +14,11 @@ LANGUAGES = {
 @st.cache_data
 def load_translations(lang_code):
     try:
-        with open(f"pages/i18n/{lang_code}.json", "r", encoding="utf-8") as f:
+        with open(f"pages/i18n/{lang_code}.json", encoding="utf-8") as f:
             return json.load(f)
-    except:
+    except Exception:
         return {}
+
 
 # -----------------------------
 # TRANSLATION FUNCTION

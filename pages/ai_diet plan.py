@@ -93,10 +93,10 @@ Create a comprehensive, personalised {meals_per_day}-meal-per-day diet plan for 
 - Goal: {goal}
 - Activity Level: {activity}
 - Diet Type: {diet_type}
-- Allergies: {allergies if allergies else 'None'}
+- Allergies: {allergies if allergies else "None"}
 - BMR: {round(bmr)} kcal/day
 - TDEE: {round(tdee)} kcal/day
-- Extra Notes: {extra_notes if extra_notes else 'None'}
+- Extra Notes: {extra_notes if extra_notes else "None"}
 
 Provide:
 1. Daily calories and macro targets (Protein, Carbs, Fat) in a table.

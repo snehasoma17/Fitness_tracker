@@ -50,7 +50,7 @@ Create a highly professional and tailored {days}-day weekly workout plan for a p
 - Weight: {weight} kg
 - Goal: {goal}
 - Training Days: {days} days per week
-- Extra constraints/notes: {extra_notes if extra_notes else 'None'}
+- Extra constraints/notes: {extra_notes if extra_notes else "None"}
 
 Provide:
 1. Weekly Schedule overview.

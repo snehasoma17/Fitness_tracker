@@ -70,7 +70,7 @@ def initialize_page(page_title: str, page_icon: str, check_login: bool = True):
         ">
             <div style="color:#a5b4fc;font-size:0.75rem;font-weight:700;
                         letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">
-                🌐 {t('language')}
+                🌐 {t("language")}
             </div>
             <div style="color:#e2e8f0;font-size:1.05rem;font-weight:600;">
                 {flag} {current_lang}

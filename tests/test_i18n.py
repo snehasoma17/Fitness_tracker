@@ -28,7 +28,7 @@ def test_translation_fallback():
 
 def test_translation_valid_key():
     # Mock to return "English"
-    st.session_state.get.side_effect = (
-        lambda key, default=None: "English" if key == "current_language" else default
+    st.session_state.get.side_effect = lambda key, default=None: (
+        "English" if key == "current_language" else default
     )
     assert t("app_title") == "AI Fitness Tracker"
