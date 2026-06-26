@@ -158,7 +158,7 @@ else:
         if st.button("📊 " + t("dashboard"), use_container_width=True):
             st.switch_page("pages/dashboard.py")
         if st.button("🥗 " + t("ai_diet_plan"), use_container_width=True):
-            st.switch_page("pages/ai_diet plan.py")
+            st.switch_page("pages/ai_diet_plan.py")
         if st.button("📄 " + t("rag_assistant"), use_container_width=True):
             st.switch_page("pages/rag_fitness_assistant.py")
 
@@ -166,17 +166,17 @@ else:
         if st.button("🍽️ " + t("meals"), use_container_width=True):
             st.switch_page("pages/meals.py")
         if st.button("💪 " + t("ai_workout_planner"), use_container_width=True):
-            st.switch_page("pages/ai_workout planner.py")
+            st.switch_page("pages/ai_workout_planner.py")
         if st.button("👤 " + t("profile"), use_container_width=True):
             st.switch_page("pages/profile.py")
 
     with col3:
         if st.button("🔥 " + t("workout_streak"), use_container_width=True):
-            st.switch_page("pages/workout-streak.py")
+            st.switch_page("pages/workout_streak.py")
         if st.button("📈 " + t("progress"), use_container_width=True):
             st.switch_page("pages/progress.py")
         if st.button("🤖 " + t("ai_coach"), use_container_width=True):
-            st.switch_page("pages/ai-coach.py")
+            st.switch_page("pages/ai_coach.py")
 
     st.write("")
     st.divider()

@@ -101,9 +101,8 @@ security:
     - bandit -r . -x .venv,tests --skip B101,B311 -ll
   allow_failure: true   # advisory; high-severity findings will be visible
   artifacts:
-    reports:
-      # Export SAST-compatible JSON for GitLab Security Dashboard
-      sast: bandit-report.json
+    paths:
+      - bandit-report.json
     when: always
   after_script:
     - bandit -r . -x .venv,tests --skip B101,B311 -f json -o bandit-report.json 2>/dev/null || true
@@ -118,7 +117,7 @@ audit:
   stage: audit
   <<: *setup
   script:
-    - uv audit --preview-features audit
+    - pip audit
   allow_failure: true   # advisory — won't block pipeline for known advisories
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
