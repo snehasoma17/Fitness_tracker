@@ -264,9 +264,10 @@ st.markdown(
 )
 
 try:
-    # Use pandas to pull
     meals_df = pd.read_sql(
-        f"SELECT * FROM meals WHERE username='{username}' ORDER BY date DESC", conn
+        "SELECT * FROM meals WHERE username=? ORDER BY date DESC",
+        conn,
+        params=(username,),
     )
 except Exception:
     meals_df = pd.DataFrame()

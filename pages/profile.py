@@ -18,8 +18,7 @@ username = st.session_state.username
 conn = sqlite3.connect("fitness.db", check_same_thread=False)
 cursor = conn.cursor()
 
-# Load current user data
-user_df = pd.read_sql(f"SELECT * FROM users WHERE username='{username}'", conn)
+user_df = pd.read_sql("SELECT * FROM users WHERE username=?", conn, params=(username,))
 user = user_df.iloc[0] if not user_df.empty else None
 
 # ── PAGE HEADER ──────────────────────────────────────────────

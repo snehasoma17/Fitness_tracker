@@ -108,9 +108,12 @@ with info_col:
         unsafe_allow_html=True,
     )
 
-# ── LOAD DATA ────────────────────────────────────────────────
 try:
-    df = pd.read_sql(f"SELECT * FROM weight_log WHERE username='{username}' ORDER BY date", conn)
+    df = pd.read_sql(
+        "SELECT * FROM weight_log WHERE username=? ORDER BY date",
+        conn,
+        params=(username,),
+    )
 except Exception:
     df = pd.DataFrame()
 

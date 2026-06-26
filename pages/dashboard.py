@@ -60,7 +60,8 @@ except sqlite3.OperationalError:
 workouts_this_week = 0
 try:
     cursor.execute(
-        "SELECT COUNT(*) FROM workouts WHERE username=? AND date >= date('now', '-7 days')", (username,)
+        "SELECT COUNT(*) FROM workouts WHERE username=? AND date >= date('now', '-7 days')",
+        (username,),
     )
     workouts_this_week = cursor.fetchone()[0]
 except sqlite3.Error:

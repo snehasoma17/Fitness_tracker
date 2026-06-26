@@ -39,7 +39,7 @@ repos:
         name: "Dead code (vulture)"
         language: python
         entry: vulture
-        args: [".", "--min-confidence=80", "--exclude=.venv,tests"]
+        args: ["pages", "utils", "app.py", "ai_helper.py", "database.py", "profile.py", "--min-confidence=80"]
         types: [python]
         pass_filenames: false
         additional_dependencies: ["vulture"]
@@ -51,22 +51,18 @@ repos:
         name: "Security (bandit)"
         language: python
         entry: bandit
-        args: ["-r", ".", "-x", ".venv,tests", "--skip", "B101,B311", "-ll"]
+        args: ["-r", "pages", "utils", "app.py", "ai_helper.py", "database.py", "profile.py", "--skip", "B101,B311", "-ll"]
         types: [python]
         pass_filenames: false
         additional_dependencies: ["bandit"]
 
   # ──────────────────────────────────────────────────────────────────────────
-  # 6. PACKAGE AUDIT  (pip-audit)
-  # ──────────────────────────────────────────────────────────────────────────
-      - id: pip-audit
-        name: "Package audit (pip-audit)"
-        language: python
-        entry: pip-audit
-        args: ["-r", "requirements.txt", "--progress-spinner=off"]
+      - id: uv-audit
+        name: "Package audit (uv audit)"
+        language: system
+        entry: uv audit --preview-features audit
         pass_filenames: false
         always_run: true
-        additional_dependencies: ["pip-audit"]
 
   # ──────────────────────────────────────────────────────────────────────────
   # 7. UNIT TESTS  (pytest)

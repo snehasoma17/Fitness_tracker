@@ -118,8 +118,7 @@ audit:
   stage: audit
   <<: *setup
   script:
-    - uv pip install pip-audit --quiet
-    - pip-audit -r requirements.txt --progress-spinner=off
+    - uv audit --preview-features audit
   allow_failure: true   # advisory — won't block pipeline for known advisories
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
