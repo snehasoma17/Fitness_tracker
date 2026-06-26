@@ -17,7 +17,7 @@ initialize_page(t("app_title"), "🏋️", check_login=False)
 conn = sqlite3.connect("fitness.db", check_same_thread=False)
 cursor = conn.cursor()
 
-# Ensure users table is initialized
+# Ensure database tables are fully initialized with correct schemas
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS users(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -30,6 +30,41 @@ CREATE TABLE IF NOT EXISTS users(
     goal TEXT DEFAULT 'Weight Loss'
 )
 """)
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS workouts(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT,
+    date TEXT,
+    exercise TEXT,
+    duration INTEGER,
+    calories INTEGER
+)
+""")
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS meals(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT,
+    date TEXT,
+    meal TEXT,
+    food TEXT,
+    calories INTEGER,
+    protein INTEGER DEFAULT 0,
+    carbs INTEGER DEFAULT 0
+)
+""")
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS weight_log(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT,
+    date TEXT,
+    weight REAL,
+    notes TEXT
+)
+""")
+
 conn.commit()
 
 # ==========================================
