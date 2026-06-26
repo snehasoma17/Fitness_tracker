@@ -195,10 +195,20 @@ st.markdown(
 
 today_str = str(date.today())
 # Fetch meals for advisor
-cursor.execute(
-    "SELECT meal, food, calories FROM meals WHERE username=? AND date=?", (username, today_str)
-)
-today_meals = cursor.fetchall()
+try:
+    cursor.execute(
+        "SELECT meal, food, calories FROM meals WHERE username=? AND date=?", (username, today_str)
+    )
+    today_meals = cursor.fetchall()
+except sqlite3.OperationalError:
+    # Fallback if 'food' column does not exist
+    cursor.execute(
+        "SELECT meal, calories FROM meals WHERE username=? AND date=?", (username, today_str)
+    )
+    # Pad missing food with None
+    rows = cursor.fetchall()
+    today_meals = [(row[0], None, row[1]) for row in rows]
+
 
 adv_btn_lbl = t("ask_ai_nutritionist")
 

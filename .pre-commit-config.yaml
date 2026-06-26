@@ -27,8 +27,8 @@ repos:
         additional_dependencies:
           - types-requests
           - types-PyYAML
-        args: ["--ignore-missing-imports", "--no-strict-optional"]
-        exclude: ^(tests/|\.venv/)
+        args: ["--ignore-missing-imports", "--no-strict-optional", "--exclude=profile.py"]
+        exclude: ^(tests/|\.venv/|profile\.py)
 
   # ──────────────────────────────────────────────────────────────────────────
   # 4. DEAD CODE  (vulture)

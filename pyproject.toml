@@ -55,6 +55,7 @@ disallow_untyped_defs = false
 exclude = [
     ".venv/",
     "tests/",
+    "^profile\\.py$",   # duplicate of pages/profile.py — root copy is legacy
 ]
 
 # ---------------------------------------------------------------------------

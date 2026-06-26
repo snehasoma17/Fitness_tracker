@@ -40,8 +40,16 @@ protein_goal = int(user_weight * 1.8)  # 1.8g per kg
 
 # Fetch today's logged calories
 today_str = str(date.today())
-cursor.execute("SELECT SUM(calories) FROM meals WHERE username=? AND date=?", (username, today_str))
-today_calories_val = cursor.fetchone()[0]
+try:
+    cursor.execute(
+        "SELECT SUM(calories) FROM meals WHERE username=? AND date=?", (username, today_str)
+    )
+    today_calories_val = cursor.fetchone()[0]
+except sqlite3.OperationalError:
+    # Fallback if 'username' column does not exist
+    cursor.execute("SELECT SUM(calories) FROM meals WHERE date=?", (today_str,))
+    today_calories_val = cursor.fetchone()[0]
+
 today_calories = int(today_calories_val) if today_calories_val else 0
 
 # Fetch workout count this week

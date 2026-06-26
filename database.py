@@ -15,10 +15,14 @@ calories INTEGER
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS meals(
-id INTEGER PRIMARY KEY AUTOINCREMENT,
-date TEXT,
-meal TEXT,
-calories INTEGER
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT,
+    date TEXT,
+    meal TEXT,
+    food TEXT,
+    calories INTEGER,
+    protein INTEGER DEFAULT 0,
+    carbs INTEGER DEFAULT 0
 )
 """)
 

@@ -72,7 +72,7 @@ type-check:
   stage: type-check
   <<: *setup
   script:
-    - mypy . --ignore-missing-imports --no-strict-optional --exclude .venv
+    - mypy . --ignore-missing-imports --no-strict-optional --exclude .venv --exclude profile.py
   allow_failure: true   # mypy is advisory — won't block merge
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
